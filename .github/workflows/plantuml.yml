@@ -1,0 +1,26 @@
+name: Generate PlantUML Diagrams
+on:
+  push:
+jobs:
+  plantuml:
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      UML_FILES: ".puml"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Source
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Generate SVG Diagrams
+        uses: holowinski/plantuml-github-action@main
+        with:
+          args: -v -tsvg docs/*.puml
+      - name: Create Index
+        run: mv docs/README.md docs/index.md
+      - name: Commit changes
+        uses: EndBug/add-and-commit@v5
+        with:
+          message: 'Create image files by GitHub Action(create-plantuml-images.yml).'
+          add: './docs*'
+          push: true
